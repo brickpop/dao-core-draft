@@ -5,15 +5,6 @@ import "../base/base.sol";
 contract Erc20BiddingPluginTemplate is PluginTemplate {
     Erc20Minter minter;
 
-    // Here you tell the PluginInstaller what permissions the new plugin created on deploy() needs
-    bytes32[] public override permissionsOnDao = [
-        bytes32("EXEC_PERMISSION_ID")
-    ];
-    // Here you tell the PluginInstaller what permissions the DAO needs on the plugin returned on deploy()
-    bytes32[] public override permissionsForDao = [
-        bytes32("CONFIG_PERMISSION_ID")
-    ];
-
     constructor(Erc20Minter _minter) {
         minter = _minter;
     }
@@ -62,6 +53,31 @@ contract Erc20BiddingPluginTemplate is PluginTemplate {
     }
 
     function update(bytes32 oldVersion, bytes memory data) public override {}
+
+    // PERMISSIONS
+
+    // Here you tell the PluginInstaller what permissions each plugin returned on deploy() needs
+    function getPermissionsOnDao()
+        public
+        pure
+        override
+        returns (bytes32[] memory result)
+    {
+        result[0] = bytes32("EXEC_PERMISSION_ID"); // plugin permission
+        result[1] = bytes32("CONFIG_PERMISSION_ID"); // plugin permission
+        return result;
+    }
+
+    // Here you tell the PluginInstaller what permissions the DAO needs on each plugin returned on deploy()
+    function getPermissionsForDao()
+        public
+        pure
+        override
+        returns (bytes32[] memory result)
+    {
+        result[0] = bytes32("CONFIG_PERMISSION_ID"); // plugin permission
+        return result;
+    }
 }
 
 // The Plugin

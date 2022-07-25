@@ -23,19 +23,15 @@ contract PluginInstaller {
         address newPlugin = template.deploy(daoAddress, data);
 
         // 3) PLUGIN PERMISSIONS: Grant the plugin the declared permissions on the DAO contract
-        for (uint256 i = 0; i < template.permissionsOnDao.len(); i++) {
-            Component(newPlugin).grant(
-                daoAddress,
-                template.permissionsOnDao(i)
-            );
+        bytes32[] memory perms1 = template.getPermissionsOnDao();
+        for (uint256 i = 0; i < perms1.len(); i++) {
+            Component(daoAddress).grant(newPlugin, perms1[i]);
         }
 
         // 4) DAO PERMISSIONS: Grant the permissions declared by the plugin to the DAO
-        for (uint256 i = 0; i < template.permissionsForDao.len(); i++) {
-            Component(daoAddress).grant(
-                newPlugin,
-                template.permissionsForDao(i)
-            );
+        bytes32[] memory perms2 = template.getPermissionsForDao();
+        for (uint256 i = 0; i < perms2.len(); i++) {
+            Component(newPlugin).grant(daoAddress, perms2[i]);
         }
 
         return newPlugin;
@@ -54,20 +50,18 @@ contract PluginInstaller {
         newPlugins = bundle.deploy(daoAddress, data);
 
         // 3) PLUGIN PERMISSIONS: Grant each plugin the declared permissions on the DAO contract
+        bytes32[] memory permissions1 = bundle.getPermissionsOnDao();
         for (uint256 i = 0; i < newPlugins.len(); i++) {
-            bytes32[] memory permissions = bundle.permissionsOnDao(i);
-
-            for (uint256 j = 0; j < permissions.len(); j++) {
-                Component(newPlugins[i]).grant(daoAddress, permissions[j]);
+            for (uint256 j = 0; j < permissions1[i].len(); j++) {
+                Component(newPlugins[i]).grant(daoAddress, permissions1[i][j]);
             }
         }
 
         // 4) DAO PERMISSIONS: Grant the permissions declared by each plugin to the DAO
+        bytes32[] memory permissions2 = bundle.getPermissionsForDao();
         for (uint256 i = 0; i < newPlugins.len(); i++) {
-            bytes32[] memory permissions = bundle.permissionsForDao(i);
-
-            for (uint256 j = 0; j < permissions.len(); j++) {
-                Component(daoAddress).grant(newPlugins[i], permissions[j]);
+            for (uint256 j = 0; j < permissions2[i].len(); j++) {
+                Component(daoAddress).grant(newPlugins[i], permissions2[i][j]);
             }
         }
 

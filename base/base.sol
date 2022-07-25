@@ -1,22 +1,22 @@
 abstract contract PluginBundle {
     event BundleInstalled(address daoAddress);
 
-    bytes32[][] public permissionsOnDao;
-    bytes32[][] public permissionsForDao;
-
     function deploy(address daoAddress, bytes memory data)
         public
         virtual
         returns (address[] memory);
 
     function update(bytes32 oldVersion, bytes memory data) public virtual;
+
+    function getPluginIds() public virtual returns (bytes32[] memory result);
+
+    function getPermissionsOnDao() public virtual returns (bytes32[][] memory);
+
+    function getPermissionsForDao() public virtual returns (bytes32[][] memory);
 }
 
 abstract contract PluginTemplate {
     event PluginInstalled(address daoAddress, address plugin);
-
-    bytes32[] public permissionsOnDao;
-    bytes32[] public permissionsForDao;
 
     function deploy(address daoAddress, bytes memory data)
         public
@@ -24,6 +24,10 @@ abstract contract PluginTemplate {
         returns (address);
 
     function update(bytes32 oldVersion, bytes memory data) public virtual;
+
+    function getPermissionsOnDao() public virtual returns (bytes32[] memory);
+
+    function getPermissionsForDao() public virtual returns (bytes32[] memory);
 }
 
 abstract contract Component {
